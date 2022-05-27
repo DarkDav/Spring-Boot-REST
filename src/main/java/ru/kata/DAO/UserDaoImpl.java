@@ -29,13 +29,13 @@ public class UserDaoImpl implements UserDAO {
         return entityManager.find(User.class, id);
     }
 
-    @Transactional
+
     @Override
     public void save(User user) {
         entityManager.persist(user);
     }
 
-    @Transactional
+
     @Override
     public void delete(long id) {
         Query q = entityManager.createQuery("delete from User User where id = :id");
@@ -43,7 +43,7 @@ public class UserDaoImpl implements UserDAO {
         q.executeUpdate();
     }
 
-    @Transactional
+
     @Override
     public void update(User user) {
         entityManager.merge(user);

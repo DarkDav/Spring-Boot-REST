@@ -1,4 +1,4 @@
-package ru.kata.security;
+package ru.kata.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,12 +7,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.DAO.UserDAO;
+import ru.kata.model.User;
 
-@Transactional
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    UserDAO userDAO;
+    private UserDAO userDAO;
 
     @Autowired
     public UserDetailsServiceImpl(UserDAO userDAO) {
@@ -21,10 +22,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        User user = userDAO.findByUsername(s);
         try {
+            if (user == null) {
+                throw new UsernameNotFoundException("Error");
+            }
             return userDAO.findByUsername(s);
         } catch (UsernameNotFoundException u) {
             throw new UsernameNotFoundException("user not found");
         }
+
     }
 }

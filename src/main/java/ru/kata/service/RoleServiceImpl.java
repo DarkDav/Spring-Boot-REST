@@ -1,16 +1,19 @@
 package ru.kata.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.DAO.RoleDAO;
 import ru.kata.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
+import java.beans.Transient;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Service
-public class RoleServiceImpl implements RoleService{
+public class RoleServiceImpl implements RoleService {
 
     private final RoleDAO roleDAO;
 
@@ -24,15 +27,14 @@ public class RoleServiceImpl implements RoleService{
         return roleDAO.findAllRole();
     }
 
+    @Transactional
     @Override
-    @PostConstruct
-    public void addDefaultRole() {
-        roleDAO.save(new Role("ROLE_USER"));
-        roleDAO.save(new Role("ROLE_ADMIN"));
+    public void save(Role role) {
+        roleDAO.save(role);
     }
 
     @Override
     public Set<Role> findByIdRoles(List<Long> roles) {
-      return new HashSet<>(roleDAO.findByIdRoles(roles));
+        return new HashSet<>(roleDAO.findByIdRoles(roles));
     }
 }

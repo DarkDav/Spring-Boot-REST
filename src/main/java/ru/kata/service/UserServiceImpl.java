@@ -1,30 +1,34 @@
 package ru.kata.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.validation.BindingResult;
 import ru.kata.DAO.RoleDAO;
 import ru.kata.DAO.UserDAO;
-import ru.kata.model.Role;
 import ru.kata.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
-@Transactional
+
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
-    private final RoleDAO roleDAO;
+
     private final PasswordEncoder passwordEncoder;
 
+
+    @Autowired
     public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO, PasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
-        this.roleDAO = roleDAO;
+
         this.passwordEncoder = passwordEncoder;
+
+
     }
 
     @Override
@@ -43,17 +47,25 @@ public class UserServiceImpl implements UserService {
         return userDAO.getById(id);
     }
 
-
+    @Transactional
     @Override
     public void save(User user) {
         userDAO.save(passwordCoder(user));
     }
 
+    @Transactional
     @Override
     public void update(User user) {
+
+        if (user.getPassword() == null) {
+            user.setPassword(getById(user.getUserId()).getPassword());
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         userDAO.update(user);
     }
 
+    @Transactional
     @Override
     public void deleteById(long id) {
         userDAO.delete(id);
@@ -64,18 +76,5 @@ public class UserServiceImpl implements UserService {
         return userDAO.findByUsername(username);
     }
 
-    @Override
-    @PostConstruct
-    public void addDefaultUser() {
-        Set<Role> roles1 = new HashSet<>();
-        roles1.add(roleDAO.findById(1L));
-        Set<Role> roles2 = new HashSet<>();
-        roles2.add(roleDAO.findById(1L));
-        roles2.add(roleDAO.findById(2L));
-        User user1 = new User("Harry", "Osborn", (byte) 25, "lolo@mail.com", "user", "12345", roles1);
-        User user2 = new User("Rayn", "Gosling", (byte) 30, "admin@mail.com", "admin", "admin", roles2);
-        save(user1);
-        save(user2);
-    }
 }
 

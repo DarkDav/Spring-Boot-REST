@@ -1,7 +1,6 @@
 package ru.kata.controller;
 
 import ru.kata.Exception.ExceptionInfo;
-import ru.kata.Exception.UserUsernameExistException;
 import ru.kata.model.User;
 import ru.kata.service.RoleService;
 import ru.kata.service.UserService;
@@ -39,12 +38,10 @@ public class RestApiController {
             String error = getErrorsFromBindingResult(bindingResult);
             return new ResponseEntity<>(new ExceptionInfo(error), HttpStatus.BAD_REQUEST);
         }
-        try {
-            userService.save(user);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (UserUsernameExistException u) {
-            throw new UserUsernameExistException("User with username exist");
-        }
+
+        userService.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @DeleteMapping("/users/{id}")
@@ -73,20 +70,9 @@ public class RestApiController {
             String error = getErrorsFromBindingResult(bindingResult);
             return new ResponseEntity<>(new ExceptionInfo(error), HttpStatus.BAD_REQUEST);
         }
-        try {
-            String oldPassword = userService.getById(id).getPassword();
-            if (oldPassword.equals(user.getPassword())) {
-                System.out.println("TRUE");
-                user.setPassword(oldPassword);
-                userService.update(user);
-            } else {
-                System.out.println("FALSE");
-                userService.save(user);
-            }
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (UserUsernameExistException u) {
-            throw new UserUsernameExistException("User with username exist");
-        }
+        userService.update(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     private String getErrorsFromBindingResult(BindingResult bindingResult) {

@@ -24,7 +24,7 @@ public class RoleDAOImpl implements RoleDAO {
         return entityManager.createQuery("select r from Role r").getResultList();
     }
 
-    @Transactional
+
     @Override
     public void save(Role role) {
         entityManager.persist(role);
