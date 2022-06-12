@@ -1,4 +1,4 @@
-package ru.kata.AddDefUsers;
+package ru.kata.Util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
